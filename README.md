@@ -24,9 +24,6 @@ This setup uses the public LDAP test server from forumsys.com for testing Authel
 
 ## Available Test Applications
 
-- **auth.example.local** - Authelia login page (bypass - no auth required)
-- **jarvis.example.local** - JARVIS Command Center()
-
 1. **auth.example.local** → Bypass (no auth required)
 2. **jarvis.example.local** → Pedeng one_factor/two_factor
 
