@@ -25,14 +25,10 @@ This setup uses the public LDAP test server from forumsys.com for testing Authel
 ## Available Test Applications
 
 - **auth.example.local** - Authelia login page (bypass - no auth required)
-- **admin.example.local** - Admin dashboard (one-factor auth)
-- **finance.example.local** - Finance app (two-factor auth)
-- **whoami.example.local** - Basic app (two-factor auth)
+- **jarvis.example.local** - JARVIS Command Center()
 
 1. **auth.example.local** → Bypass (no auth required)
-2. **admin.example.local** → One Factor (any authenticated user)
-3. **finance.example.local** → Two Factor (any authenticated user)
-4. **whoami.example.local** → Two Factor (any authenticated user)
+2. **jarvis.example.local** → Pedeng one_factor/two_factor
 
 ## Testing
 
@@ -58,7 +54,7 @@ docker network create proxy
 docker-compose up -d
 
 4. Add to `/etc/hosts`:
-127.0.0.1 example.local auth.example.local admin.example.local finance.example.local whoami.example.local traefik.example.local
+127.0.0.1 example.local auth.example.local jarvis.example.local traefik.example.local
 
 ## Testing
 Access Authelia at: `https://auth.example.local`
