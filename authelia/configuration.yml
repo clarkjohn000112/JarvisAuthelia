@@ -1,0 +1,75 @@
+# Auther: Clark John Casin
+# Date: 2026-05-06
+
+server:
+  address: tcp://0.0.0.0:9091/
+
+log:
+  level: info
+
+# This can be set to 'light' or 'dark'. The default is 'light'. The theme can be changed in the Authelia dashboard under the 'Settings' tab. The theme will be applied to all users, so if you want to have different themes for different users, you will need to create separate Authelia instances with different configuration files.
+
+theme: dark
+
+identity_validation:
+  reset_password:
+    jwt_secret: 4715b7a3823c06776fa2abee594e01a197419e074bbd759fb72f23e930bb3001
+
+totp:
+  issuer: example.local
+
+authentication_backend:
+  ldap:
+    address: ldap://ldap.forumsys.com:389
+    base_dn: dc=example,dc=com
+    user: cn=read-only-admin,dc=example,dc=com
+    password: password
+    users_filter: '(&(objectClass=person)({username_attribute}={input}))'
+    groups_filter: '(&(objectClass=groupOfUniqueNames)(uniqueMember={dn}))'
+    attributes:
+      username: uid
+      display_name: cn
+      mail: mail
+      group_name: ou
+      member_of: memberOf
+# Attributes mapping can be used to map LDAP attributes to Authelia's user model. In this example, we are mapping the LDAP 'uid' attribute to Authelia's 'username', the 'cn' attribute to 'display_name', the 'mail' attribute to 'email', and the 'ou' attribute to 'group_name'. The 'memberOf' attribute is used to determine group membership for access control rules.
+access_control:
+  default_policy: deny
+  rules:
+    - domain: auth.example.local
+      policy: bypass
+      # The bypass policy allows access without authentication. This is useful for the authentication server itself, as well as for any resources that should be accessible without authentication (e.g., a public website).
+    - domain: jarvis.example.local
+      policy: two_factor
+
+
+session:
+  name: authelia_session
+  secret: a857bb01d1ad248c1e5128cb9514b24c6954614755552ce448a7eb98e30fd5b4
+  expiration: 3600
+  inactivity: 300
+  cookies:
+    - domain: example.local
+      authelia_url: https://auth.example.local
+      default_redirection_url: https://jarvis.example.local
+
+regulation:
+  max_retries: 3
+  find_time: 120
+  ban_time: 300
+
+# Regulation currently only supports IP address banning. If you have a dynamic IP address, you may want to consider using a VPN or a proxy server to access the protected resources. This will allow you to maintain a consistent IP address and avoid being banned due to failed login attempts.
+storage:
+  encryption_key: 866222b6cb3faf716afd4739b0bcb7204a7b0e62e765771f55d7ae80644cafc5
+  local:
+    path: /config/db.sqlite3
+
+notifier:
+  smtp:
+    address: smtp://smtp.gmail.com:587
+    username: clarktoledana02@gmail.com
+    password: cldn wtts orch fcjj
+    sender: "Authelia <clarktoledana02@gmail.com>"
+    identifier: auth.example.local
+    subject: "[Authelia] Verification Code"
+    startup_check_address: clarktoledana02@gmail.com

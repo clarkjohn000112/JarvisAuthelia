@@ -1,0 +1,41 @@
+# traefik/dynamic.yml
+http:
+  routers:
+    jarvis:
+      rule: "Host(`jarvis.example.local`)"
+      entrypoints:
+        - websecure
+      tls: {}
+      service: jarvis
+      middlewares:
+        - authelia@docker
+
+  services:
+    jarvis:
+      loadBalancer:
+        servers:
+          - url: "http://host-gateway:3000"
+
+
+# With DOTNET Backend
+
+# http:
+#   routers:
+#     jarvis-api:
+#       rule: "Host(`jarvis.example.local`) && PathPrefix(`/api`)"
+#       service: jarvis-dotnet
+#       middlewares:
+#         - api-strip-prefix
+#         - authelia@docker
+
+#   middlewares:
+#     api-strip-prefix:
+#       stripPrefix:
+#         prefixes:
+#           - "/api"
+
+#   services:
+#     jarvis-dotnet:
+#       loadBalancer:
+#         servers:
+#           - url: "http://host-gateway:4000"

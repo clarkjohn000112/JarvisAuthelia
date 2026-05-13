@@ -1,0 +1,64 @@
+services:
+  traefik:
+    image: traefik:v2.11
+    container_name: traefik
+    restart: unless-stopped
+    command:
+      - --api.dashboard=true
+      - --providers.docker=true
+      - --providers.docker.exposedbydefault=false
+      - --entrypoints.web.address=:80
+      - --entrypoints.websecure.address=:443
+      - --entrypoints.web.http.redirections.entrypoint.to=websecure
+      - --entrypoints.web.http.redirections.entrypoint.scheme=https
+      - --certificatesresolvers.letsencrypt.acme.tlschallenge=true
+      - --certificatesresolvers.letsencrypt.acme.email=${ACME_EMAIL}
+      - --certificatesresolvers.letsencrypt.acme.storage=/letsencrypt/acme.json
+      - --log.level=INFO
+      - --providers.file.filename=/config/dynamic.yml 
+      - --providers.file.watch=true  
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - letsencrypt:/letsencrypt
+      - ./traefik/dynamic.yml:/config/dynamic.yml 
+    extra_hosts:
+      - "host-gateway:host-gateway"              
+    networks:
+      - proxy
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.dashboard.rule=Host(`traefik.${DOMAIN}`)
+      - traefik.http.routers.dashboard.entrypoints=websecure
+      - traefik.http.routers.dashboard.tls.certresolver=letsencrypt
+      - traefik.http.routers.dashboard.service=api@internal
+      - traefik.http.routers.dashboard.middlewares=authelia@docker
+
+  authelia:
+    image: authelia/authelia:latest
+    container_name: authelia
+    restart: unless-stopped
+    volumes:
+      - ./authelia:/config
+    environment:
+      - TZ=${TZ}
+    networks:
+      - proxy
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.authelia.rule=Host(`auth.${DOMAIN}`)
+      - traefik.http.routers.authelia.entrypoints=websecure
+      - traefik.http.routers.authelia.tls.certresolver=letsencrypt
+      - traefik.http.services.authelia.loadbalancer.server.port=9091
+      - traefik.http.middlewares.authelia.forwardauth.address=http://authelia:9091/api/authz/forward-auth
+      - traefik.http.middlewares.authelia.forwardauth.trustforwardheader=true
+      - traefik.http.middlewares.authelia.forwardauth.authresponseheaders=Remote-User,Remote-Groups,Remote-Name,Remote-Email
+
+volumes:
+  letsencrypt:
+
+networks:
+  proxy:
+    external: true
