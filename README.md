@@ -64,4 +64,4 @@ ldapsearch -x -H ldap://ldap.forumsys.com:389 -D cn=read-only-admin,dc=example,d
 Query groups:
 ldapsearch -x -H ldap://ldap.forumsys.com:389 -D cn=read-only-admin,dc=example,dc=com -w password -b dc=example,dc=com "(objectClass=groupOfUniqueNames)"
 
-For searching, editing and maintaining your own LDAP server, or for connecting to this Online Test LDAP instance, we recommend Apache Directory Studio.# JarvisAuthelia
+For searching, editing and maintaining your own LDAP server, or for connecting to this Online Test LDAP instance, we recommend Apache Directory Studio.
